@@ -1,31 +1,84 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 // import notes from "../assets/data";
 import { Link } from "react-router-dom";
 import { ReactComponent as ArrowLeft } from "../assets/arrow-left.svg";
 
 const NotePage = (props) => {
+  let navigate = useNavigate()
   let { id } = useParams();
 
   // let note = notes.find((note) => note.id === Number(id));
+  let [note, setNote] = useState(null);
 
+  useEffect(() => {
+    getNote();
+  }, [id]);
 
-  let getNotes = async () => {
-    let response = await fetch("http://localhost:8000/notes");
+  let getNote = async () => {
+    if (id === 'new') return
+    let response = await fetch(`http://localhost:8000/notes/${id}`);
     let data = await response.json();
-    console.log("data:", data);
+    setNote(data);
   };
+
+  let createNote = async () => {
+    console.log('create note')
+    await fetch(`http://localhost:8000/notes/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({...note, 'updated': new Date()})
+    });
+  };
+
+  let updateNote = async () => {
+    await fetch(`http://localhost:8000/notes/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({...note, 'updated': new Date()})
+    });
+  };
+
+  let handleSubmit = () => {
+
+    if (id !== 'new' && !note.body) {
+      deleteNote()
+    } else if (id !== 'new') {
+      updateNote()
+    } else if (id === 'new' && note !== null) {
+      createNote()
+    }
+    navigate('/');
+  }
+
+  let deleteNote = async () => {
+    await fetch(`http://localhost:8000/notes/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(note)
+    });
+    navigate('/');
+  }
 
   return (
     <div className="note">
       <div className="note-header">
         <h3>
           <Link to="/">
-            <ArrowLeft />
+            <ArrowLeft onClick={handleSubmit} />
           </Link>
         </h3>
+        {id !== 'new' ? (
+          <button onClick={deleteNote}>Delete</button>
+          
+          ): (
+            <button onClick={handleSubmit}>Done</button>
+        )}
       </div>
-      {/* <textarea value={note?.body}></textarea> */}
+      <textarea
+        onChange={(e) => setNote({ ...note, body: e.target.value })}
+        value={note?.body}
+      ></textarea>
     </div>
   );
 };
