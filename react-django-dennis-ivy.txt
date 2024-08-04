@@ -1,0 +1,21 @@
+React / Django Dennis ivy
+
+
+
+-a page in react is actually a js component
+
+-components return back some JSX code
+
+-npm run build is going to give us an optimised version of our app - it bundles up all the code files and turns them into static assets ready to be served
+
+-public folder contains index.html (the main template for our project) and all the static assets that come with it (ie: images, icons)
+
+-package.json is like the settings configuration file for our project
+
+-App.js is our root component and acts as the main parent component
+
+-we are going to have two different types of components, components that are part of our page and components that represent different pages
+
+-an API is restful when a single endpoint can handle a variety of http methods ie: GET, POST, PUT DELETE
+
+-4 steps to fetch data from the frontend: set up useState, set up useEffect, set up your fetching function, render the data in the component
